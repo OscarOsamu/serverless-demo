@@ -39,21 +39,14 @@ resource "aws_lambda_function" "api" {
   timeout       = 15
   environment {
     variables = {
-      TABLE_NAME = aws_dynamodb_table.contacts.name
+       TABLE_NAME = data.aws_dynamodb_table.contacts.name
     }
   }
 }
-
-resource "aws_dynamodb_table" "contacts" {
+data "aws_dynamodb_table" "contacts" {
   name         = "contacts"
-  billing_mode = "PAY_PER_REQUEST"
-  hash_key     = "id"
-
-  attribute {
-    name = "id"
-    type = "S"
   }
-}
+
 
 resource "aws_api_gateway_rest_api" "api" {
   name        = "hello-api"
@@ -153,3 +146,4 @@ resource "aws_lambda_permission" "allow_apigw_contact" {
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/contact"
 }
+
